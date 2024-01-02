@@ -31,8 +31,6 @@ func HandleRequest(ctx context.Context, s3Event events.S3Event) {
 
 		bucket := record.S3.Bucket.Name
 		key := record.S3.Object.Key
-		//bucket := "burige.314257712735.ap-northeast-2"
-		//key := "NewRank/2023-12-01/buridge_dy_account_daily_data_20231201.avro"
 
 		// S3에서 Avro 파일 가져오기
 		result, err := s3Client.GetObject(&s3.GetObjectInput{
@@ -85,57 +83,30 @@ func HandleRequest(ctx context.Context, s3Event events.S3Event) {
 				}
 			}
 
-			// "totalSales" 필드를 숫자로 변환
-			totalSalesStr, ok := rawDatum["totalSales"].(string)
+			// "price" 필드를 숫자로 변환
+			priceStr, ok := rawDatum["price"].(string)
 			if ok {
-				totalSales, err := strconv.ParseFloat(totalSalesStr, 64)
+				price, err := strconv.ParseFloat(priceStr, 64)
 				if err == nil {
-					rawDatum["totalSales"] = totalSales
+					rawDatum["price"] = price
 				}
 			}
 
-			// "maxPrice" 필드를 숫자로 변환
-			maxPriceStr, ok := rawDatum["maxPrice"].(string)
+			// "estimateSales" 필드를 숫자로 변환
+			estimateSalesStr, ok := rawDatum["estimateSales"].(string)
 			if ok {
-				maxPrice, err := strconv.ParseFloat(maxPriceStr, 64)
+				estimateSales, err := strconv.ParseFloat(estimateSalesStr, 64)
 				if err == nil {
-					rawDatum["maxPrice"] = maxPrice
+					rawDatum["estimateSales"] = estimateSales
 				}
 			}
 
-			// "fansIncRate" 필드를 숫자로 변환
-			fansIncRateStr, ok := rawDatum["fansIncRate"].(string)
+			// "oriPrice" 필드를 숫자로 변환
+			oriPriceStr, ok := rawDatum["oriPrice"].(string)
 			if ok {
-				fansIncRate, err := strconv.ParseFloat(fansIncRateStr, 64)
+				oriPrice, err := strconv.ParseFloat(oriPriceStr, 64)
 				if err == nil {
-					rawDatum["fansIncRate"] = fansIncRate
-				}
-			}
-
-			// "avgViewDuration" 필드를 숫자로 변환
-			avgViewDurationStr, ok := rawDatum["avgViewDuration"].(string)
-			if ok {
-				avgViewDuration, err := strconv.ParseFloat(avgViewDurationStr, 64)
-				if err == nil {
-					rawDatum["avgViewDuration"] = avgViewDuration
-				}
-			}
-
-			// "avgSalePrice" 필드를 숫자로 변환
-			avgSalePriceStr, ok := rawDatum["avgSalePrice"].(string)
-			if ok {
-				avgSalePrice, err := strconv.ParseFloat(avgSalePriceStr, 64)
-				if err == nil {
-					rawDatum["avgSalePrice"] = avgSalePrice
-				}
-			}
-
-			// "salesTransRate" 필드를 숫자로 변환
-			salesTransRateStr, ok := rawDatum["salesTransRate"].(string)
-			if ok {
-				salesTransRate, err := strconv.ParseFloat(salesTransRateStr, 64)
-				if err == nil {
-					rawDatum["salesTransRate"] = salesTransRate
+					rawDatum["oriPrice"] = oriPrice
 				}
 			}
 
@@ -170,7 +141,7 @@ func indexBatchToOpenSearch(batchData []interface{}, openSearchURL string) error
 	var buffer bytes.Buffer
 	for _, data := range batchData {
 		metaData := map[string]map[string]string{
-			"index": {"_index": "lives"},
+			"index": {"_index": "live_products"},
 		}
 		jsonMeta, _ := json.Marshal(metaData)
 		buffer.Write(jsonMeta)
